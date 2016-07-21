@@ -34,6 +34,37 @@ class TestDmdetection(object):
         assert help_result.exit_code == 0
         assert '--help  Show this message and exit.' in help_result.output
 
+    def test_cosmologies(self):
+        cosmolist = ['WMAP1', 'WMAP3', 'WMAP5',
+                     'WMAP7', 'WMAP9',
+                     'Planck13', 'Planck15']
+        conclist = [8.84952, 6.57093, 7.66308,
+                    7.893508, 8.88391,
+                    9.25026, 9.044999]
+        ival = 0
+        for cosmo in cosmolist:
+            output = commah.run(cosmo, Mi=[1e12])
+            assert(np.allclose(output['c'].flatten()[0],
+                   conclist[ival], rtol=1e-3))
+            ival += 1
+        pass
+
+    def test_evolution(self):
+        zlist = np.array([0., 1., 2.])
+        conclist = np.array([7.66308, 5.70009, 4.55295])
+        output = commah.run('WMAP5', zi=[0.], Mi=[1e12], z=zlist)
+        assert(np.allclose(output['c'].flatten(), conclist, rtol=1e-3))
+        pass
+
+    def test_startingz(self):
+        zlist = np.array([0., 1., 2.])
+        conclist = np.array([4.55295, 4.43175, 4.26342])
+        output = commah.run('WMAP5', zi=zlist, Mi=[1e12], z=2.)
+        assert(np.allclose(output['c'].flatten(), conclist, rtol=1e-3))
+        pass
+
+    def tearDown(self):
+        pass
     @classmethod
     def teardown_class(cls):
         pass
